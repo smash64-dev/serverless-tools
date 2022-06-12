@@ -17,6 +17,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cors-proxy
           command: publish --env production
-        env:
-          ALLOWED_HOSTS: ${{ secrets.CORS_ALLOWED_HOSTS }}
-          REDIRECT_URL: ${{ secrets.CORS_REDIRECT_URL }}

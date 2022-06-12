@@ -81,6 +81,10 @@ async function handleRequest(request, origin) {
 }
 
 function isValidOrigin(origin) {
+    if (ALLOWED_HOSTS === '*') {
+        return true;
+    }
+
     try {
         let hosts = ALLOWED_HOSTS.split(',').map(host => host.trim());
         let url = new URL(origin).hostname;
@@ -110,6 +114,5 @@ function proxyRequest(event) {
 }
 
 addEventListener('fetch', event => {
-    console.log(test);
     event.respondWith(proxyRequest(event));
 });

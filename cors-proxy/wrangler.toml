@@ -3,9 +3,12 @@ main = "src/worker.js"
 compatibility_date = "2022-06-12"
 
 [vars]
-ALLOWED_HOSTS = "localhost, 127.0.0.1"
+ALLOWED_HOSTS = "*"
 REDIRECT_URL = "https://github.com/smash64-dev"
 
+[env.production]
+name = "cors-proxy"
+
 [env.production.vars]
-ALLOWED_HOSTS = ""
+ALLOWED_HOSTS = "smash64.dev, smash64.online"
 REDIRECT_URL = "https://github.com/smash64-dev"
