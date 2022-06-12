@@ -1,0 +1,21 @@
+name: Publish workers to Cloudflare
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Publish cors-proxy via wrangler
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cloudflare/wrangler-action@2.0.0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: cors-proxy
+          command: publish --env production
+        env:
+          ALLOWED_HOSTS: ${{ secrets.CORS_ALLOWED_HOSTS }}
+          REDIRECT_URL: ${{ secrets.CORS_REDIRECT_URL }}

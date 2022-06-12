@@ -1,0 +1,7 @@
+name = "cors-proxy"
+main = "src/worker.js"
+compatibility_date = "2022-06-12"
+
+[vars]
+ALLOWED_HOSTS = "localhost, 127.0.0.1"
+REDIRECT_URL = "https://github.com/smash64-dev"
