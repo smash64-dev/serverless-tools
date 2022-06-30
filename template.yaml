@@ -13,7 +13,10 @@ Globals:
       Variables: {}
 
 Resources:
-  PythonLibLayer:
+  #
+  # lambda layers
+  #
+  KailleraPyLayer:
     Type: AWS::Serverless::LayerVersion
     Description: Basic library to communicate with kaillera servers and okai p2p clients
     Properties:
@@ -21,13 +24,16 @@ Resources:
     Metadata:
       BuildMethod: python3.9
 
+  #
+  # lambda functions
+  #
   KailleraServerCheckFunction:
     Type: AWS::Serverless::Function
     Description: Checks if a remote kaillera server is running
     Properties:
       CodeUri: server-check/src/
       Layers:
-        - !Ref PythonLibLayer
+        - !Ref KailleraPyLayer
       Events:
         ServerCheck:
           Type: Api
