@@ -1,6 +1,7 @@
 from enum import Enum
-from util.message import Message
-import util.primitives as types
+
+from message import Message
+import primitives as types
 
 
 class MessageType(Enum):

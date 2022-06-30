@@ -1,4 +1,4 @@
-name: Publish workers to AWS Lambda
+name: Publish functions to AWS Lambda
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-aws-check:
-    name: Publish connection-check via sam
+    name: Publish lambda functions via sam
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,5 +18,5 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - run: sam build --use-container --base-dir connection-check
+      - run: sam build --use-container
       - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name smash64-dev-connection-check --s3-bucket ${{ secrets.AWS_S3_BUCKET }} --capabilities CAPABILITY_IAM --region ${{ secrets.AWS_REGION }}

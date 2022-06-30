@@ -1,8 +1,8 @@
 from __future__ import annotations
+import enum
 from typing import TypeVar, Union
 
-import enum
-import util.primitives as types
+import primitives as types
 
 
 class Message:

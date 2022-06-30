@@ -1,10 +1,10 @@
-from argparse import ArgumentError
 import copy
 import socket
 import time
 from enum import Enum
 
-from util.message import MessageBuffer
+from message import MessageBuffer
+
 import kaillera.models as Kaillera
 from kaillera.models import (
     KailleraMessage,
@@ -42,7 +42,7 @@ class Client:
     def send_message(self, message: KailleraMessage) -> MessageBuffer:
         if not self.priv_sock:
             # Explicitly require a connect() call first
-            raise ArgumentError("You must connect() run first")
+            raise ValueError("You must connect() run first")
 
         self.client_buffer.add(message)
         raw = self.__send_raw(self.priv_sock, self.client_buffer.encode())

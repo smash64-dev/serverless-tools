@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  serverless-tools
+  A collection of serverless functions to aid smash64-dev
+
+Globals:
+  Function:
+    Handler: app.lambda_handler
+    Runtime: python3.9
+    Timeout: 5
+    Environment:
+      Variables: {}
+
+Resources:
+  PythonLibLayer:
+    Type: AWS::Serverless::LayerVersion
+    Description: Basic library to communicate with kaillera servers and okai p2p clients
+    Properties:
+      ContentUri: lib/python
+    Metadata:
+      BuildMethod: python3.9
+
+  KailleraServerCheckFunction:
+    Type: AWS::Serverless::Function
+    Description: Checks if a remote kaillera server is running
+    Properties:
+      CodeUri: server-check/src/
+      Layers:
+        - !Ref PythonLibLayer
+      Events:
+        ServerCheck:
+          Type: Api
+          Properties:
+            Path: /kaillera/server-check
+            Method: post
+
+Outputs:
+  ConnectionCheckApi:
+    Description: "API Gateway endpoint URL for Prod stage for Connection Check functions"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/smash64-dev/"
+  KailleraServerCheckFunction:
+    Description: "Server Check Function ARN"
+    Value: !GetAtt KailleraServerCheckFunction.Arn

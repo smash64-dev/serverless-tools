@@ -15,7 +15,7 @@ def respond(http_code: int, success: bool, message: str):
     }
 
 
-def server_check(event, context):
+def lambda_handler(event, context):
     try:
         body = json.loads(event['body'])
         client = Kaillera.Client(body['host'], int(body['port']))
@@ -25,8 +25,8 @@ def server_check(event, context):
         return respond(400, False, "Invalid parameters")
 
     try:
-        client.ping(3)
+        latency, drops = client.ping(3)
     except ConnectionRefusedError as e:
         return respond(200, False, "Unable to connect")
 
-    return respond(200, True, "Connection successful")
+    return respond(200, True, f"{latency}ms")
