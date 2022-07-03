@@ -33,6 +33,12 @@ Resources:
     Properties:
       Name: !Sub "${ApiSubdomain}.${OnlineDomain}"
       Description: !Sub "Public REST API for ${OnlineDomain}"
+      Cors:
+        AllowCredentials: true
+        AllowHeaders: "'X-Forwarded-For'"
+        AllowMethods: "'GET, POST'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
       StageName: !Sub "${Stage}"
 
   # domain mapping - domain creation is handled outside this stack configuration
