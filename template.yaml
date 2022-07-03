@@ -34,7 +34,6 @@ Resources:
       Name: !Sub "${ApiSubdomain}.${OnlineDomain}"
       Description: !Sub "Public REST API for ${OnlineDomain}"
       Cors:
-        AllowCredentials: true
         AllowHeaders: "'X-Forwarded-For'"
         AllowMethods: "'GET, POST'"
         AllowOrigin: "'*'"
