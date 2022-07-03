@@ -26,4 +26,5 @@ jobs:
           --capabilities CAPABILITY_IAM \
           --region ${{ secrets.AWS_REGION }} \
           --s3-bucket ${{ secrets.AWS_S3_BUCKET }} \
+          --s3-prefix ${{ secrets.AWS_S3_PREFIX }} \
           --stack-name ${{ secrets.AWS_STACK_NAME }}

@@ -1,10 +1,24 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  serverless-tools
-  A collection of serverless functions to aid smash64-dev
+Description: A collection of serverless functions to aid smash64-dev
+
+Parameters:
+  ApiSubdomain:
+    Type: String
+    Default: api
+  OnlineDomain:
+    Type: String
+    Default: smash64.online
+  Prefix:
+    Type: String
+    Default: serverless-tools
+  Stage:
+    Type: String
+    Default: prod
 
 Globals:
+  Api:
+    OpenApiVersion: 3.0.3
   Function:
     Handler: app.lambda_handler
     Runtime: python3.9
@@ -13,38 +27,51 @@ Globals:
       Variables: {}
 
 Resources:
-  #
-  # lambda layers
-  #
-  KailleraPyLayer:
-    Type: AWS::Serverless::LayerVersion
-    Description: Basic library to communicate with kaillera servers and okai p2p clients
+  # api gateways
+  OnlineDomainApi:
+    Type: AWS::Serverless::Api
     Properties:
+      Name: !Sub "${ApiSubdomain}.${OnlineDomain}"
+      Description: !Sub "Public REST API for ${OnlineDomain}"
+      StageName: !Ref Stage
+
+  # domain mapping - domain creation is handled outside this stack configuration
+  OnlineDomainApiMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties:
+      DomainName: !Sub "${ApiSubdomain}.${OnlineDomain}"
+      RestApiId: !Ref OnlineDomainApi
+      Stage: !Ref Stage
+
+  # lambda layers
+  KailleraPythonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${Prefix}-lib-kaillera-py"
+      Description: Minimal library to communicate with kaillera servers and okai p2p clients
       ContentUri: lib/python
     Metadata:
       BuildMethod: python3.9
 
-  #
   # lambda functions
-  #
   KailleraServerCheckFunction:
     Type: AWS::Serverless::Function
-    Description: Checks if a remote kaillera server is running
     Properties:
+      FunctionName: !Sub "${Prefix}-kaillera-server-check"
+      Description: Checks if a public kaillera server is running
       CodeUri: server-check/src/
       Layers:
-        - !Ref KailleraPyLayer
+        - !Ref KailleraPythonLayer
       Events:
         ServerCheck:
           Type: Api
           Properties:
             Path: /kaillera/server-check
-            Method: post
+            Method: POST
+            RestApiId:
+              Ref: OnlineDomainApi
 
 Outputs:
-  ConnectionCheckApi:
-    Description: "API Gateway endpoint URL for Prod stage for Connection Check functions"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/smash64-dev/"
-  KailleraServerCheckFunction:
-    Description: "Server Check Function ARN"
-    Value: !GetAtt KailleraServerCheckFunction.Arn
+  OnlineDomainApi:
+    Description: "API endpoint URL for smash64.online functions"
+    Value: !Sub "https://${OnlineDomainApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
