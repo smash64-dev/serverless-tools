@@ -8,6 +8,11 @@ import kaillera.client as Kaillera
 def respond(http_code: int, success: bool, message: str):
     return {
         "statusCode": http_code,
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
         "body": json.dumps({
             "message": message,
             "success": success,
@@ -26,7 +31,7 @@ def lambda_handler(event, context):
 
     try:
         latency, drops = client.ping(3)
-    except ConnectionRefusedError as e:
+    except Exception as e:
         return respond(200, False, "Unable to connect")
 
     return respond(200, True, f"{latency}ms")
