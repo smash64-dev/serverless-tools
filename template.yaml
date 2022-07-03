@@ -33,7 +33,7 @@ Resources:
     Properties:
       Name: !Sub "${ApiSubdomain}.${OnlineDomain}"
       Description: !Sub "Public REST API for ${OnlineDomain}"
-      StageName: !Ref Stage
+      StageName: !Sub "${Stage}"
 
   # domain mapping - domain creation is handled outside this stack configuration
   OnlineDomainApiMapping:
@@ -41,7 +41,7 @@ Resources:
     Properties:
       DomainName: !Sub "${ApiSubdomain}.${OnlineDomain}"
       RestApiId: !Ref OnlineDomainApi
-      Stage: !Ref Stage
+      Stage: !Ref OnlineDomainApi.Stage
 
   # lambda layers
   KailleraPythonLayer:
@@ -70,8 +70,3 @@ Resources:
             Method: POST
             RestApiId:
               Ref: OnlineDomainApi
-
-Outputs:
-  OnlineDomainApi:
-    Description: "API endpoint URL for smash64.online functions"
-    Value: !Sub "https://${OnlineDomainApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
