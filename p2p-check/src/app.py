@@ -20,7 +20,7 @@ def bot_message_en(user: str, host: str, port: int,
     ]
 
 
-def respond(http_code: int, success: bool, message: str):
+def respond(http_code: int, success: bool, message: str, meta: dict = {}):
     return {
         "statusCode": http_code,
         'headers': {
@@ -30,6 +30,7 @@ def respond(http_code: int, success: bool, message: str):
         },
         "body": json.dumps({
             "message": message,
+            "meta": json.dumps(meta),
             "success": success,
         }),
     }
@@ -45,9 +46,11 @@ def lambda_handler(event, context):
         check_from = event.get('headers', {}).get(header, 'unknown')
         host = check_from if body['host'] == 'self' else body['host']
 
+        meta = {'host': host, 'port': port}
+
         client = Kaillera.P2PClient(host, port)
     except socket.error:
-        return respond(400, False, "Unable to connect")
+        return respond(400, False, "Unable to connect", meta)
     except Exception as e:
         return respond(400, False, "Invalid parameters")
 
@@ -58,6 +61,9 @@ def lambda_handler(event, context):
 
         if connect is True:
             user, game = client.get_host_info(response)
+            meta['user'] = user
+            meta['game'] = game
+
             message = bot_message_en(user, host, port, check_from, check_via)
 
             for id, line in enumerate(message):
@@ -65,11 +71,8 @@ def lambda_handler(event, context):
                 client.chat(line, wait=wait)
             client.disconnect()
 
-            return respond(200, True, json.dumps({
-                'host': host, 'port': port,
-                'user': user, 'game': game,
-            }))
+            return respond(200, True, "OK", meta)
         else:
-            return respond(200, False, "Unable to connect")
+            return respond(200, False, "Unable to connect", meta)
     except Exception as e:
-        return respond(200, False, "Unable to connect")
+        return respond(200, False, "Unable to connect", meta)
