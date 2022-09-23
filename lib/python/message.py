@@ -1,4 +1,5 @@
 from __future__ import annotations
+import copy
 import enum
 from typing import TypeVar, Union
 
@@ -38,15 +39,17 @@ class MessageBuffer:
     T = TypeVar("T")
 
     def __init__(self, buffer: Union[list[T], bytes] = [], tx_size: int = 5,
-                 manage: bool = False, as_: T = Message):
+                 manage: bool = False, as_: T = Message, meta_size: int = 4):
         self.manage = manage
         self.tx_size = tx_size
         self.type_ = as_
+        self.meta_size = meta_size
 
         if type(buffer) == bytes:
-            self.buffer = self.decode(buffer, manage, as_)
+            self.buffer = self.decode(
+                copy.deepcopy(buffer), manage, as_, self.meta_size)
         else:
-            self.buffer = buffer
+            self.buffer = copy.deepcopy(buffer)
 
     def __getitem__(self, item):
         return self.buffer[item]
@@ -78,7 +81,7 @@ class MessageBuffer:
 
     @classmethod
     def decode(self, stream: bytes, manage: bool = False,
-               as_: T = Message) -> MessageBuffer:
+               as_: T = Message, meta_size: int = 4) -> MessageBuffer:
         messages = []
         count = int.from_bytes(stream[0:1], types.ORDER)
 
@@ -87,7 +90,7 @@ class MessageBuffer:
         for _ in range(count):
             message = as_.decode(stream[offset:])
             messages.append(message)
-            offset = offset + 4 + message.size
+            offset = offset + meta_size + message.size
 
         return MessageBuffer(messages, tx_size=count, manage=manage, as_=as_)
 

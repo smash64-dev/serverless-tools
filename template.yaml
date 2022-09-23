@@ -59,6 +59,23 @@ Resources:
       BuildMethod: python3.9
 
   # lambda functions
+  KailleraP2PCheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${Prefix}-kaillera-p2p-check"
+      Description: Checks if port forwarding is set up correctly for p2p
+      CodeUri: p2p-check/src/
+      Layers:
+        - !Ref KailleraPythonLayer
+      Events:
+        ServerCheck:
+          Type: Api
+          Properties:
+            Path: /kaillera/p2p-check
+            Method: POST
+            RestApiId:
+              Ref: OnlineDomainApi
+
   KailleraServerCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
