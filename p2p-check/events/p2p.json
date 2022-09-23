@@ -1,5 +1,5 @@
 {
-  "body": "{ \"host\": \"127.0.0.1\", \"port\": \"27886\", \"from\": \"aws-sam\" }",
+  "body": "{ \"host\": \"127.0.0.1\", \"port\": \"27886\", \"via\": \"aws-sam\" }",
   "resource": "/{proxy+}",
   "path": "/path/to/resource",
   "httpMethod": "POST",
