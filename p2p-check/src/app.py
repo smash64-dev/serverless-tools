@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import socket
 
 import kaillera.p2pclient as Kaillera
@@ -39,7 +40,7 @@ def respond(http_code: int, success: bool, message: str, meta: dict = {}):
 def lambda_handler(event, context):
     try:
         body = json.loads(event['body'])
-        header = 'cf-connecting-ip'
+        header = os.environ['PROXY_HEADER']
 
         port = int(body['port']) if 'port' in body else 27886
         check_via = body['via'] if 'via' in body else 'unknown'

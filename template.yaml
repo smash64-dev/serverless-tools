@@ -12,6 +12,9 @@ Parameters:
   Prefix:
     Type: String
     Default: serverless-tools
+  ProxyHeader:
+    Type: String
+    Default: cf-connecting-ip
   Stage:
     Type: String
     Default: prod
@@ -24,7 +27,8 @@ Globals:
     Runtime: python3.9
     Timeout: 7
     Environment:
-      Variables: {}
+      Variables:
+        PROXY_HEADER: !Sub "${ProxyHeader}"
 
 Resources:
   # api gateways
@@ -59,6 +63,21 @@ Resources:
       BuildMethod: python3.9
 
   # lambda functions
+  KailleraGetIPFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${Prefix}-kaillera-get-ip"
+      Description: Returns the IP address forwarded by the proxy service
+      CodeUri: get-ip/src/
+      Events:
+        ServerCheck:
+          Type: Api
+          Properties:
+            Path: /kaillera/get-ip
+            Method: GET
+            RestApiId:
+              Ref: OnlineDomainApi
+
   KailleraP2PCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
